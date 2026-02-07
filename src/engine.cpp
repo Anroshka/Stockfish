@@ -123,6 +123,15 @@ Engine::Engine(std::optional<std::string> path) :
 
     options.add("UCI_ShowWDL", Option(false));
 
+    options.add("Futility_Base", Option(76, 0, 200, [](const Option& o) {
+                    Futility_Base = int(o);
+                    return std::nullopt;
+                }));
+    options.add("Futility_TtHit_Malus", Option(23, 0, 100, [](const Option& o) {
+                    Futility_TtHit_Malus = int(o);
+                    return std::nullopt;
+                }));
+
     options.add(  //
       "SyzygyPath", Option("", [](const Option& o) {
           Tablebases::init(o);

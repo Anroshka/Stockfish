@@ -45,6 +45,9 @@
 
 namespace Stockfish {
 
+extern int Futility_Base;
+extern int Futility_TtHit_Malus;
+
 // Different node types, used as a template parameter
 enum NodeType {
     NonPV,

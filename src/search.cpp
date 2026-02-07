@@ -52,6 +52,10 @@
 
 namespace Stockfish {
 
+// Глобальные переменные для тюнинга
+int Futility_Base = 76;
+int Futility_TtHit_Malus = 23;
+
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -878,10 +882,10 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     {
         auto futility_margin = [&](Depth d) {
-            Value futilityMult = 76 - 23 * !ss->ttHit;
+            Value futilityMult = Futility_Base - Futility_TtHit_Malus * !ss->ttHit;
 
             return futilityMult * d
-                 - (2474 * improving + 331 * opponentWorsening) * futilityMult / 1024  //
+                 - (2474 * improving + 331 * opponentWorsening) * futilityMult / 1024
                  + std::abs(correctionValue) / 174665;
         };
 
