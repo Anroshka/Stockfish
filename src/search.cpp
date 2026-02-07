@@ -1226,8 +1226,15 @@ moves_loop:  // When in check, search starts here
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
-            r += r / (depth + 1);
+        {
+            int weight = (ss + 2)->cutoffCnt + 2;
 
+            if (ss->statScore > 1024)
+                weight = std::max(2, weight - 1);
+
+            r += r * weight / (2 * depth + 2);
+        }
+        
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
         {
