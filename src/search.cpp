@@ -1111,6 +1111,9 @@ moves_loop:  // When in check, search starts here
     MovePicker mp(pos, ttData.move, depth, &mainHistory, &lowPlyHistory, &captureHistory, contHist,
                   &sharedHistory, ss->ply);
 
+    // Keep the parent pawn structure for history lookups after do_move().
+    const auto& pawnEntry = sharedHistory.pawn_entry(pos);
+
     value = bestValue;
 
     int moveCount = 0;
@@ -1199,7 +1202,7 @@ moves_loop:  // When in check, search starts here
                 int dIndex  = std::min(int(depth), int(lmrDivisor.size())) - 1;
                 int history = (*contHist[0])[movedPiece][move.to_sq()]
                             + (*contHist[1])[movedPiece][move.to_sq()]
-                            + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
+                            + pawnEntry[movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
                 if (history < -4136 * depth)
@@ -1350,6 +1353,9 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 439 / 4096;
+
+        if (!capture)
+            r -= pawnEntry[movedPiece][move.to_sq()] * 439 / 4096;
 
         if (!capture && !is_decisive(alpha))
             r += 3 * std::clamp(alpha - eval, -64, 96);
